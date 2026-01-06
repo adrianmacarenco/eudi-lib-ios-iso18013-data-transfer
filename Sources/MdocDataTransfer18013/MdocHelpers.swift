@@ -243,7 +243,7 @@ public class MdocHelpers {
 	///   - action: The action to perform
 	@MainActor
 	public static func checkBleAccess(_ vc: UIViewController, action: @escaping ()->Void) {
-		switch CBManager.authorization {
+		switch CBManager.compatibleAuthorization {
 		case .denied:
 			// "Denied, request permission from settings"
 			presentSettings(vc, msg: NSLocalizedString("Bluetooth access is denied", comment: ""))
@@ -330,4 +330,17 @@ public class MdocHelpers {
 			}
 			return dn
 		}
+}
+
+
+extension CBManager {
+
+	static var compatibleAuthorization: CBManagerAuthorization {
+		if #available(iOS 13.1, *) {
+			return CBManager.authorization
+		} else {
+			let manager = CBCentralManager()
+			return manager.authorization
+		}
+	}
 }
